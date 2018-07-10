@@ -1,5 +1,8 @@
 <?php
+require_once __DIR__ . '/EduSoapClient.php';
 
+define('EDUSHARING_DISPLAY_MODE_DISPLAY', 'window');
+define('EDUSHARING_DISPLAY_MODE_INLINE', 'inline');
 
 class Edusharing {
 
@@ -7,43 +10,14 @@ class Edusharing {
 
     }
 
-    /*public function getContenturl($eduObj, $displayMode = 'inline') {
-        $contenturl = get_config_plugin('artefact', 'edusharing', 'repourl') . '/renderingproxy';
-        $contenturl .= '?app_id=' . urlencode ( get_config_plugin('artefact', 'edusharing', 'appid') );
-        $contenturl .= '&rep_id=' . get_config_plugin('artefact', 'edusharing', 'repoid');
-        $contenturl .= '&obj_id=' . $eduObj['nodeid'];
-        $contenturl .= '&resource_id=' . urlencode ( $eduObj['uid'] );
-        $contenturl .= '&course_id=' . urlencode ( $eduObj['contentid']);
-        $contenturl .= '&display=' . $displayMode;
-        if($displayMode === 'window')
-            $contenturl .= '&closeOnBack=true';
-        $contenturl .= '&width=' . $_GET['edusharing_width'];
-        $contenturl .= '&height='  . $_GET['edusharing_height'];
-        $contenturl .= '&language=' . 'de';
-        $contenturl .= '&version=' . $eduObj['version'];
-        $contenturl .= $this -> getSecurityParams();
-
-        return $contenturl;
+    function getSignature($data) {
+        $privkey = get_config_plugin('artefact', 'edusharing', 'appprivate');
+        $pkeyid = openssl_get_privatekey($privkey);
+        openssl_sign($data, $signature, $pkeyid);
+        $signature = base64_encode($signature);
+        openssl_free_key($pkeyid);
+        return $signature;
     }
-
-    public function getSecurityParams() {
-        ///////change username!!!!!!!!
-        $paramString = '';
-        $ts = round ( microtime ( true ) * 1000 );
-        $paramString .= '&ts=' . $ts;
-        $paramString .= '&u=' . urlencode( 'sp4DWsQVmJg=' ); //es_guest
-        $signature = '';
-        $priv_key = get_config_plugin('artefact', 'edusharing', 'appprivate');
-        $pkeyid = openssl_get_privatekey ( $priv_key );
-        openssl_sign ( get_config_plugin('artefact', 'edusharing', 'appid') . $ts, $signature, $pkeyid );
-        $signature = base64_encode ( $signature );
-        openssl_free_key ( $pkeyid );
-        $paramString .= '&sig=' . urlencode ( $signature );
-        $paramString .= '&signed=' . urlencode(get_config_plugin('artefact', 'edusharing', 'appid').$ts);
-        $paramString .= '&ticket=' . urlencode(base64_encode($this->encrypt_with_repo_public($this->getTicket())));
-
-        return $paramString;
-    }*/
 
     public function getTicket() {
         global $USER;
@@ -54,9 +28,7 @@ class Edusharing {
                 $params = array(get_config_plugin('artefact', 'edusharing', 'repoauthkey') => $username, "ticket" => $_SESSION["repository_ticket"]);
                 try {
                     $alfReturn = $eduSoapClient -> checkTicket($params);
-
                     if ($alfReturn === true) {
-
                         return $_SESSION["repository_ticket"];
                     }
                 } catch (Exception $e) {
@@ -74,7 +46,7 @@ class Edusharing {
         }
     }
 
-    private function encrypt_with_repo_public($data) {
+    public function encryptWithRepoPublic($data) {
         $crypted = '';
         $key = openssl_get_publickey(get_config_plugin('artefact', 'edusharing', 'repopublic'));
         openssl_public_encrypt($data ,$crypted, $key);
@@ -90,6 +62,27 @@ class Edusharing {
         openssl_pkey_export($res, $privatekey);
         $publickey = openssl_pkey_get_details($res);
         return (object)array('appprivate'=>$privatekey, 'apppublic'=>$publickey["key"]);
+    }
+
+    function getRedirectUrl(EdusharingObject $edusharingObject, $displaymode = EDUSHARING_DISPLAY_MODE_DISPLAY) {
+        global $USER;
+        $edusharing = new Edusharing();
+        $url = get_config_plugin('artefact', 'edusharing', 'repourl') . '/renderingproxy';
+        $url .= '?rep_id=' . get_config_plugin('artefact', 'edusharing', 'repoid');
+        $url .= '&app_id=' . get_config_plugin('artefact', 'edusharing', 'appid');
+        $url .= '&session='.urlencode(session_id());
+        $objId = str_replace('ccrep://'.get_config_plugin('artefact', 'edusharing', 'repoid').'/', '', $edusharingObject->objecturl);
+        $url .= '&obj_id='.urlencode($objId);
+        $url .= '&resource_id='.urlencode($edusharingObject->id);
+        $url .= '&course_id='.urlencode($edusharingObject->instanceId);
+        $url .= '&display='.urlencode($displaymode);
+        $url .= '&width=' . urlencode($edusharingObject->width);
+        $url .= '&height=' . urlencode($edusharingObject->height);
+        $url .= '&version=' . urlencode($edusharingObject->version);
+        $url .= '&locale=' . urlencode(get_user_institution_language($USER->id)); //repository
+        $url .= '&language=' . urlencode(get_user_institution_language($USER->id)); //rendering service
+        $url .= '&u='. rawurlencode(base64_encode($edusharing->encryptWithRepoPublic($USER->get('username'))));
+        return $url;
     }
 
 }

@@ -1,15 +1,18 @@
 <?php
 define('INTERNAL', 1);
-define('MENUITEM', 'myportfolio/myplugin');
+define('MENUITEM', 'myportfolio/edusharing');
 define('SECTION_PLUGINTYPE', 'artefact');
 define('SECTION_PLUGINNAME', 'edusharing');
 define('SECTION_PAGE', 'index');
 
-require(dirname(dirname(dirname(FILE))) . '/init.php');
-define('TITLE', get_string('MenuItemString', 'artefact.edusharing'));
+require(dirname(dirname(dirname(__FILE__))) . '/init.php');
+require_once __DIR__ . '/lib/Edusharing.php';
 
-$indexstring = get_string('IndexPageString', 'artefact.edusharing');
+define('TITLE','edu-sharing arbeitsplatz');
+
+$edusharing = new Edusharing();
 
 $smarty = smarty();
-$smarty->assign('indexstring', $indexstring);
+$smarty->assign('workspaceurl', get_config_plugin('artefact', 'edusharing','repourl').'/components/workspace?ticket=' . $edusharing->getTicket());
+$smarty->assign('INLINEJAVASCRIPT', $js);
 $smarty->display('artefact:edusharing:index.tpl');

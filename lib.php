@@ -2,6 +2,7 @@
 defined('INTERNAL') || die();
 
 require_once('activity.php');
+require_once __DIR__ . '/lib/EdusharingObject.php';
 
 class PluginArtefactEdusharing extends PluginArtefact {
 
@@ -22,19 +23,183 @@ class PluginArtefactEdusharing extends PluginArtefact {
     public static function menu_items() {
         return array(
             array(
-                'path' => 'myportfolio/edusharing',
+                'path' => 'content/edusharing',
                 'url' => 'artefact/edusharing/',
-                'title' => get_string('MenuItemString', 'artefact.edusharing'),
+                'title' => 'edu-sharing files',
                 'weight' => 20,
             ),
         );
     }
+
+        public static function get_event_subscriptions() {
+
+        /*
+         * deleteartefact
+         * deleteartefacts
+         * deleteblockinstance
+         *
+         *todo
+         * check in saveartefact and blockinstancecommit for deleted or changed objects
+         *
+         * */
+
+
+        return array(
+            (object)array(
+                'plugin' => 'edusharing',
+                'event' => 'saveartefact',
+                'callfunction' => 'edusharing_saveartefact'
+                ),
+            (object)array(
+                'plugin' => 'edusharing',
+                'event' => 'blockinstancecommit',
+                'callfunction' => 'edusharing_blockinstancecommit'
+                ),
+            (object)array(
+                'plugin' => 'edusharing',
+                'event' => 'deleteblockinstance',
+                'callfunction' => 'edusharing_deleteblockinstance'
+                ),
+            (object)array(
+                    'plugin' => 'edusharing',
+                    'event' => 'deleteartefact',
+                    'callfunction' => 'edusharing_deleteartefact'
+                ),
+            (object)array(
+                    'plugin' => 'edusharing',
+                    'event' => 'deleteartefacts',
+                    'callfunction' => 'edusharing_deleteartefacts'
+                )
+            );
     }
+
+    public static function edusharing_deleteartefact($event, ArtefactType $data) {
+        error_log('edusharing_deleteartefact');
+        try {
+            EdusharingObject::deleteByInstanceId($data->get('id'));
+        } catch(Exception $e) {
+            error_log(print_r($e, true));
+        }
+    }
+
+    public static function edusharing_deleteartefacts($event, $artefacts) {
+        try {
+            foreach($artefacts as $id) {
+                EdusharingObject::deleteByInstanceId($id);
+            }
+        } catch(Exception $e) {
+            error_log(print_r($e, true));
+        }
+    }
+
+    public static function edusharing_deleteblockinstance($event, BlockInstance $data) {
+            try {
+                if($data->get('blocktype') === 'edusharing') {
+                    $configdata = $data->get('configdata');
+                    $eduid = $configdata['eduid'];
+                    $edusharingObject = EdusharingObject::load($eduid);
+                    $edusharingObject->delete();
+                } else {
+                    EdusharingObject::deleteByInstanceId($data->get('id'));
+                }
+            } catch(Exception $e) {
+                error_log(print_r($e, true));
+            }
+    }
+
+    public static function edusharing_saveartefact($event, ArtefactType $data) {
+        global $USER;
+        $lock = $USER->get('username').$data->get('id');
+        try {
+            $description = $data->get('description');
+            $description = self::addObjects(@$description, $data->get('id'));
+            $data->set('description', $description);
+            //avoid recursion
+            if(@!$_SESSION[$lock]) {
+                $_SESSION[$lock] = true;
+                $data->commit();
+            }
+        } catch(Exception $e) {
+            error_log($e->getMessage());
+        }
+        $_SESSION[$lock] = false;
+
+    }
+
+    public static function edusharing_blockinstancecommit($event, BlockInstance $data) {
+        if($data->get('blocktype') === 'edusharing')
+            return; // we handle this in PluginBlocktypeEdusharing::instance_config_save()
+        global $USER;
+        $lock = $USER->get('username').$data->get('id');
+        try {
+            $configdata = $data->get('configdata');
+            $configdata['text'] = self::addObjects(@$configdata['text'], $data->get('id'));
+            $data->set('configdata', $configdata);
+            //avoid recursion
+            if(@!$_SESSION[$lock]) {
+                $_SESSION[$lock] = true;
+                $data->commit();
+            }
+        } catch(Exception $e) {
+            error_log($e->getMessage());
+        }
+        $_SESSION[$lock] = false;
+    }
+
+    private static function addObjects($text, $instanceId) {
+        if(strpos($text, 'edusharingObject') === false)
+            return $text;
+
+        preg_match_all('#<img(.*)edusharingObject(.*)>#Umsi', $text, $matches,PREG_PATTERN_ORDER);
+        if (!empty($matches)) {
+            foreach ($matches[0] as $match) {
+                $doc = new DOMDocument();
+                $doc->loadHTML($match);
+                $node = $doc->getElementsByTagName('img')->item(0);
+                if (empty($node)) {
+                    error_log('error loading node');
+                    return false;
+                }
+
+                $attributes = array();
+                foreach ($doc->getElementsByTagName('*') as $tag) {
+                    foreach ($tag->attributes as $attributeName => $attributeNodeVal) {
+                        $attributes[$attributeName] = $tag -> getAttribute($attributeName);
+                    }
+                }
+
+                //newly added object
+                if(!in_array('eduid', $attributes)) {
+                    $edusharingObject = new EdusharingObject($instanceId, $attributes['data-objecturl'],  $attributes['data-title'],  $attributes['data-mimetype'],  $attributes['data-version'],  $attributes['width'],  $attributes['height']);
+                    $eduid = $edusharingObject -> add();
+                    $style = 'width='.$attributes['width'].';height:'.$attributes['height'].';maxWidth=100%;';
+                    switch($attributes['data-alignment']) {
+                        case 'inline':
+                            $style .= 'display:inline-block;';
+                            break;
+                        case 'block':
+                            $style .= 'display:block;';
+                            break;
+                        case 'left':
+                            $style .= 'float:left;';
+                            break;
+                        case 'right':
+                            $style .= 'float:right;';
+                            break;
+                    }
+                    $object = '<div id="edusharing_'.$eduid.'" class="edusharingObject edusharingObjectRaw" style="'.$style.'">edusharing</div>';
+                    $text = str_replace($match, $object, $text);
+                }
+            }
+        }
+        return $text;
+    }
+}
 
 
 class ArtefactTypeEdusharing extends ArtefactType {
     public function render_self($options) {
-        return get_string('TestName', 'artefact.edusharing');
+        return 'eduartefactyeah';
     }
 
     public static function has_config() {
@@ -52,7 +217,6 @@ class ArtefactTypeEdusharing extends ArtefactType {
             alert(data.error);
             return;
         }
-        //console.log(data);
         jQuery('[name="repourl"]').val(data.usagewebservice.replace('services/usage2', ''));
         jQuery('[name="repoid"]').val(data.appid);
         jQuery('[name="repopublic"]').val(data.public_key);
@@ -76,7 +240,7 @@ EOF;
                 'type'         => 'fieldset',
                 'collapsible'  => true,
                 'collapsed'    => false,
-                // 'class'        => 'first last',
+                 'class'        => 'first',
                 'legend'       => 'prefill',
                 'elements'     => array(
                     'fetchdata' => array(

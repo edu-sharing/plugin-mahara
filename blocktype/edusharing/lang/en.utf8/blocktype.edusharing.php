@@ -12,4 +12,4 @@
 defined('INTERNAL') || die();
 
 $string['title'] = 'edu-sharing';
-$string['defaulttitledescription'] = 'If this is left empty, the title of object will be used.';
+$string['defaulttitledescription'] = '';//'If this is left empty, the title of object will be used.';

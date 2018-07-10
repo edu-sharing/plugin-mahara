@@ -18,7 +18,7 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
     }
 
     public static function get_categories() {
-        return array('general' => 1500);
+        return array('external' => 33000);
     }
 
      /**
@@ -27,14 +27,15 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
      */
     public static function get_instance_title(BlockInstance $bi) {
         return 'edusharing';
+
     }
 
     public static function render_instance(BlockInstance $instance, $editing=false) {
-        $return = '<div class="edusharingObject"';
-        foreach($instance->get('configdata') as $key => $value) {
-            $return .= 'data-' . $key . '="'.$value.'"';
+        $return = '';
+        $configdata = $instance->get('configdata');
+        if(isset($configdata['eduid'])) {
+            $return = '<div class="edusharingObject edusharingObjectRaw" id="edusharing_'.$configdata['eduid'].'">edusharing</div>';
         }
-        $return .= '>'.var_dump($instance).'</div>';
         return $return;
     }
 
@@ -51,48 +52,76 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
 
         $form = array();
 
+        //handle get condition
         $form['eduversionshow'] = array(
             'type'    => 'radio',
             'title'   => 'eduversionshow',
+            'class' =>  (isset($configdata['eduobjectUrl']))?'hidden':'',
             'options' => array(0=>'immer aktuelle', 1=>'genau diese'),
             'defaultvalue' => 0,
         );
         $form['eduobjectUrl'] = array(
             'type' => 'text',
             'class' => 'hidden',
-            'defaultvalue' => (isset($configdata['eduobjectUrl'])?$configdata['eduobjectUrl']:''),
+            'defaultvalue' => (isset($configdata['eduobjectUrl']))?$configdata['eduobjectUrl']:'',
         );
-        if(isset($configdata['eduobjectUrl'])) {
-            $form['formereduobjectUrl'] = array(
-                'type' => 'text',
-                'class' => 'hidden',
-                'value' => $configdata['eduobjectUrl'],
-            );
-        }
         $form['eduversion'] = array(
             'type' => 'text',
             'class' => 'hidden',
-            'defaultvalue' => (isset($configdata['eduversion'])?$configdata['eduversion']:''),
+            'defaultvalue' => (isset($configdata['eduversion']))?$configdata['eduversion']:'',
+        );
+        $form['previewurl'] = array(
+            'type' => 'text',
+            'class' => 'hidden',
+            'defaultvalue' => (isset($configdata['previewurl']))?$configdata['previewurl']:'',
         );
         $form['edusearchurl'] = array(
             'type' => 'hidden',
             'value' => get_config_plugin('artefact', 'edusharing', 'repourl').'/components/search?reurl=IFRAME&ticket='.$ticket,
         );
-
+        $form['edumimetype'] = array(
+            'type' => 'text',
+            'class' => 'hidden',
+            'defaultvalue' => (isset($configdata['edumimetype']))?$configdata['edumimetype']:'',
+        );
+        $form['eduid'] = array(
+            'type' => 'text',
+            'class' => 'hidden',
+            'defaultvalue' => (isset($configdata['eduid']))?$configdata['eduid']:'',
+        );
+        $form['eduwidth'] = array(
+            'type' => 'text',
+            'class' => 'hidden',
+            'defaultvalue' => (isset($configdata['eduwidth']))?$configdata['eduwidth']:'',
+        );
+        $form['eduheight'] = array(
+            'type' => 'text',
+            'class' => 'hidden',
+            'defaultvalue' => (isset($configdata['eduheight']))?$configdata['eduheight']:'',
+        );
         return $form;
     }
 
-    public static function instance_config_save($values) {
-        if($values['formereduobjectUrl']) {
-            $edusharingObject = new EdusharingObject($values['formereduobjectUrl'], 0, '', '', ($values['eduversionshow']==0)?-1:$values['eduversion']);
-            $edusharingObject->deleteUsage();
+    public static function instance_config_save($values, $instance) {
+        try {
+            $edusharingObject = new EdusharingObject($instance->get('id'), $values['eduobjectUrl'], $values['title'], $values['edumimetype'], ($values['eduversionshow'] == 0) ? -1 : $values['eduversion'], $values['eduwidth'], $values['eduheight']);
+            if (!empty($values['eduid'])) {
+                $edusharingObject->delete();
+            }
+            $values['eduid'] = $edusharingObject->add();
+            if($values['eduid'] === false)
+                throw new Exception('EduSharingObject::add() failed');
+
+            //repo deos not support preview versions, set it anyway
+            if($values['eduversionshow'] > 0) {
+                $values['previewurl'] .= '&version=' . $values['eduversion'];
+            }
+        } catch (Exception $e) {
+            error_log($e->getMessage());
         }
-        $edusharingObject = new EdusharingObject($values['eduobjectUrl'], 0, '', '', ($values['eduversionshow']==0)?-1:$values['eduversion']);
-        $edusharingObject -> setUsage();
         return $values;
     }
 
-    //obviously this is called when cnofiguring instance
     public static function get_instance_config_javascript(BlockInstance $instance) {
         return array(
             array(
@@ -104,18 +133,6 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
 
 
 
-    public static function get_event_subscriptions() {
-        $sub = new stdClass();
-        $sub->event = 'deleteblockinstance';
-        $sub->callfunction = 'testy';
-        return array($sub);
-    }
-
-    public static function testy($event, $user) {
-        echo 'testy';
-        var_dump($event);
-    }
-
 
 /*
      *
@@ -124,14 +141,15 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
  * inline javascript kann man aber auch reinhauen in der render methode
      *
      **/
-    public static function get_instance_javascript(BlockInstance $instance) {
+   /* public static function get_instance_javascript(BlockInstance $instance) {
         return array(
             array(
-                'file'   => 'js/render.js',
+   //use global edu.js!!!!!!!!!!!
+                //'file'   => 'js/render.js',//evtl nicht nötig wegen masterfilter
                // 'initjs' => "addNewPostShortcut($blockid);",
             )
         );
-    }
+    }*/
 
     public static function allowed_in_view(View $view) {
         return true;// $view->get('owner') != null;

@@ -7,10 +7,13 @@
         <TABLE NAME="artefact_edusharing">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" />
-                <FIELD NAME="repoid" TYPE="char" LENGTH="255" NOTNULL="false" />
-                <FIELD NAME="objectid" TYPE="char" LENGTH="255" NOTNULL="false" />
+                <FIELD NAME="instanceid" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="objectid" TYPE="char" LENGTH="255" NOTNULL="true" />
+                <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" />
                 <FIELD NAME="mimetype" TYPE="char" LENGTH="255" NOTNULL="false" />
                 <FIELD NAME="version" TYPE="char" LENGTH="10" NOTNULL="false" />
+                <FIELD NAME="width" TYPE="int" LENGTH="10" NOTNULL="false" />
+                <FIELD NAME="height" TYPE="int" LENGTH="10" NOTNULL="false" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" />

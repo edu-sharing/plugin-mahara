@@ -1,36 +1,41 @@
 <?php
 
+require_once __DIR__ . '/EduSoapClient.php';
+
 class EdusharingObject
 {
 
-    public $uid;
+    public $id;
+    public $instanceId;
     public $objecturl;
-    public $contentId;
     public $title;
     public $mimetype;
     public $version;
-    public $logger;
+    public $width;
+    public $height;
 
-    public function __construct($objecturl = '', $contentId = 0, $title = '', $mimetype = '', $version = '', $uid = '')
-    {
+    public function __construct($instanceId = 0, $objecturl = '', $title = '', $mimetype = '', $version = '', $width = null, $height = null) {
+        $this->instanceId = (int)$instanceId;
         $this->objecturl = $objecturl;
-        $this->contentId = $contentId;
         $this->title = $title;
         $this->mimetype = $mimetype;
         $this->version = $version;
-        $this->uid = $uid;
-
+        $this->width = $width;
+        $this->height = $height;
     }
 
-    public function deleteUsage()
-    {
+    public function getPreviewUrl() {
+        return 'https://www.gstatic.com/webp/gallery/4.sm.jpg?a=b';
+    }
+
+    public function deleteUsage() {
         $eduSoapClient = new EduSoapClient(get_config_plugin('artefact', 'edusharing', 'repourl') . '/services/usage2?wsdl');
         $params = array(
             "eduRef" => $this->objecturl,
             "user" => null,
             "lmsId" => get_config_plugin('artefact', 'edusharing', 'appid'),
-            "courseId" => $this->contentId,
-            "resourceId" => $this->uid
+            "courseId" => $this->instanceId,
+            "resourceId" => $this->instanceId
         );
         try {
             $eduSoapClient->deleteUsage($params);
@@ -40,21 +45,20 @@ class EdusharingObject
         return true;
     }
 
-    public function setUsage()
-    {
+    public function setUsage() {
         global $USER;
         $eduSoapClient = new EduSoapClient(get_config_plugin('artefact', 'edusharing', 'repourl') . '/services/usage2?wsdl');
         $params = array(
             "eduRef" => $this->objecturl,
             "user" => $USER->get('username'),
             "lmsId" => get_config_plugin('artefact', 'edusharing', 'appid'),
-            "courseId" => $this->contentId,
+            "courseId" => $this->instanceId,
             "userMail" => $USER->get('email'),
             "fromUsed" => '2002-05-30T09:00:00',
             "toUsed" => '2222-05-30T09:00:00',
             "distinctPersons" => '0',
             "version" => $this->version,
-            "resourceId" => $this->uid,
+            "resourceId" => $this->instanceId,
             "xmlParams" => ''
         );
         try {
@@ -65,72 +69,36 @@ class EdusharingObject
         return true;
     }
 
-    /*
-        public function exists() {
-            $row = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)
-                ->getConnectionForTable('tx_edusharing_object')
-                ->select(
-                    ['uid'],
-                    'tx_edusharing_object',
-                    [
-                        'objecturl' => $this->objecturl,
-                        'contentid' => $this->contentId,
-                        'version' => $this->version
-                    ]
-                )
-                ->fetch();
+    public function add() {
+        $eduid = $this -> dbInsert();
+        $this -> setUsage();
+        return $eduid;
+    }
 
-            if($row) {
-                $this->uid = $row['uid'];
-                return true;
-            }
-            return false;
-        }
+    public function delete() {
+        $this->deleteUsage();
+        $this->dbDelete();
+    }
 
-        public function add() {
-            try {
-                $this -> dbInsert();
-                $this -> setUsage();
-            } catch(\Exception $e) {
-                return false;
-            }
-            return true;
-        }
+    public static function load($eduid) {
+        $record = get_record('artefact_edusharing', 'id', $eduid);
+        return new EdusharingObject($record->instanceid,$record->objecturl,$record->title,$record->mimetype,$record->version, $record->width, $record->height);
+    }
 
-        public function delete() {
-            try {
-                $this->deleteUsage();
-                $this->dbDelete();
-            } catch(\Exception $e) {
-                return false;
-            }
-            return true;
-        }
     private function dbDelete() {
-            $connectionObject  = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)->getConnectionForTable('tx_edusharing_object');
-            $uid = $connectionObject->delete(
-                'tx_edusharing_object',
-                [
-                    'uid' => $this->uid
-                ]
-            );
-            return $uid;
+        return delete_records('artefact_edusharing','instanceid', $this->instanceId,'objecturl',$this->objecturl);
+    }
+
+
+    private function dbInsert() {
+        return insert_record('artefact_edusharing', (object)array('instanceid' => $this->instanceId,'objecturl' => $this->objecturl,'title' => $this->title,'mimetype' => $this->mimetype,'version' => $this->version, 'width'=>$this->width, 'height'=>$this->height), 'id', true);
+    }
+
+    public static function deleteByInstanceId($instanceId) {
+        $records = get_records_array('artefact_edusharing', 'instanceid', $instanceId);
+        foreach($records as $record) {
+            $eduSharingObject = new EdusharingObject($record->instanceid,$record->objecturl,$record->title,$record->mimetype,$record->version, $record->width, $record->height);
+            $eduSharingObject -> delete();
         }
-
-        private function dbInsert() {
-            $connectionObject  = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)->getConnectionForTable('tx_edusharing_object');
-            $connectionObject->insert(
-                'tx_edusharing_object',
-                [
-                    'objecturl' => $this->objecturl,
-                    'contentid' => $this->contentId,
-                    'title' => $this->title,
-                    'version' => $this->version,
-                    'mimetype' => $this->mimetype
-                ]
-            );
-
-            $this->uid = (int)$connectionObject->lastInsertId('tx_edusharing_object');
-            return true;
-        }*/
+    }
 }
