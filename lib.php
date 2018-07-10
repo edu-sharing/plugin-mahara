@@ -228,7 +228,7 @@ EOF;
         $defaultPublic = get_config_plugin('artefact', 'edusharing', 'apppublic');
         $defaultPrivate = get_config_plugin('artefact', 'edusharing', 'appprivate');
         if(empty($defaultPublic) || empty($defaultPrivate)) {
-            require_once __DIR__ . 'lib/Edusharing.php';
+            require_once __DIR__ . '/lib/Edusharing.php';
             $edusharing = new Edusharing();
             $keypair = $edusharing->getSSlKeys();
             $defaultPublic = $keypair->apppublic;
