@@ -1,11 +1,11 @@
 if(!jQuery('input[name="eduid"]').val()) {
     var edusearchurl = jQuery('input[name="edusearchurl"]').val();
     jQuery('.modal-content').prepend('<iframe class="eduFrame" id="eduFrame" src="'+edusearchurl+'" height="100%" width="100%"></iframe>');
-    jQuery("#instconf_retractable_container").after('<label>Preview</label><img class="eduPreview" style="max-width:100%;display:block;" src="">');
+    jQuery("#instconf_retractable_container").after('<img class="eduPreview" style="max-width:100%;display:block;" src="">');
 }
 
 if(jQuery('input[name="previewurl"]').val())
-    $("#instconf_retractable_container").after('<label>Preview</label><img class="eduPreview" style="max-width:100%;display:block;" src="'+jQuery('input[name="previewurl"]').val()+'">');
+    $("#instconf_retractable_container").after('<img class="eduPreview" style="max-width:100%;display:block;" src="'+jQuery('input[name="previewurl"]').val()+'">');
 
 window.addEventListener("message", function(event) {
     if(event.data.event=="APPLY_NODE"){

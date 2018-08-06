@@ -96,7 +96,6 @@ $url .= '&version='.urlencode($edusharingObject->version); //prüfen
 $url .= '&display=inline';
 $url .= '&width=' . urlencode($edusharingObject->width);
 $url .= '&height=' . urlencode($edusharingObject->height);
-
 $e = new filter_edusharing_edurender();
 $html = $e->filter_edusharing_get_render_html($url);
 $e->filter_edusharing_display($html, $id);

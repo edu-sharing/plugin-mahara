@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="artefact/edusharing/db" VERSION="20060926" COMMENT="XMLDB file for resume tables"
+<XMLDB PATH="artefact/edusharing/db" VERSION="20180730" COMMENT="XMLDB file for edu-sharing objects"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
     <TABLES>
         <TABLE NAME="artefact_edusharing">
             <FIELDS>
-                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
                 <FIELD NAME="instanceid" TYPE="int" LENGTH="10" NOTNULL="true" />
                 <FIELD NAME="objecturl" TYPE="char" LENGTH="255" NOTNULL="true" />
                 <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" />

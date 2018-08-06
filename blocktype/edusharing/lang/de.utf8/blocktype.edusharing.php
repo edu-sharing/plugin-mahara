@@ -13,3 +13,6 @@ defined('INTERNAL') || die();
 
 $string['title'] = 'edu-sharing';
 $string['defaulttitledescription'] = '';//'If this is left empty, the title of object will be used.';
+$string['eduversionshow'] = 'Version';
+$string['eduversionshow_current'] = 'genau diese';
+$string['eduversionshow_last'] = 'immer aktuelle';

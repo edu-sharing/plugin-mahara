@@ -1,0 +1,7 @@
+.icon-edusharing::before {
+    content: url(../img/thumb.png);
+}
+
+div.mdsGroup {
+    padding: 0 !important;
+}

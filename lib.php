@@ -147,18 +147,30 @@ class PluginArtefactEdusharing extends PluginArtefact {
     }
 
     private static function addObjects($text, $instanceId) {
+
+        global $USER;
+
         if(strpos($text, 'edusharingObject') === false)
             return $text;
 
-        preg_match_all('#<img(.*)edusharingObject(.*)>#Umsi', $text, $matches,PREG_PATTERN_ORDER);
+        preg_match_all('#<img(.*)edusharingObject(.*)>#Umsi', $text, $matchesImg,PREG_PATTERN_ORDER);
+        preg_match_all('#<span(.*)edusharingObject(.*)>(.*)</span>#Umsi', $text, $matchesSpan,PREG_PATTERN_ORDER);
+
+        $matches = array_merge($matchesImg[0], $matchesSpan[0]);
+
         if (!empty($matches)) {
-            foreach ($matches[0] as $match) {
+            foreach ($matches as $match) {
                 $doc = new DOMDocument();
                 $doc->loadHTML($match);
                 $node = $doc->getElementsByTagName('img')->item(0);
+                $type = 'image';
                 if (empty($node)) {
-                    error_log('error loading node');
-                    return false;
+                    $node = $doc->getElementsByTagName('span')->item(0);
+                    $type = 'text';
+                    if (empty($node)) {
+                        error_log('error loading node');
+                        return false;
+                    }
                 }
 
                 $attributes = array();
@@ -169,10 +181,13 @@ class PluginArtefactEdusharing extends PluginArtefact {
                 }
 
                 //newly added object
-                if(!in_array('eduid', $attributes)) {
-                    $edusharingObject = new EdusharingObject($instanceId, $attributes['data-objecturl'],  $attributes['data-title'],  $attributes['data-mimetype'],  $attributes['data-version'],  $attributes['width'],  $attributes['height']);
+                if(!in_array('id', $attributes)) {
+                    $edusharingObject = new EdusharingObject($instanceId, $attributes['data-objecturl'],  $attributes['data-title'],  $attributes['data-mimetype'],  $attributes['data-version'],  (isset($attributes['width']))?$attributes['width']:'',  (isset($attributes['height']))?$attributes['height']:'');
                     $eduid = $edusharingObject -> add();
-                    $style = 'width='.$attributes['width'].';height:'.$attributes['height'].';maxWidth=100%;';
+                    $style = '';
+                    if($type === 'image')
+                        $style .= 'width='.$attributes['width'].';height:'.$attributes['height'].';maxWidth=100%;';
+
                     switch($attributes['data-alignment']) {
                         case 'inline':
                             $style .= 'display:inline-block;';
@@ -187,7 +202,13 @@ class PluginArtefactEdusharing extends PluginArtefact {
                             $style .= 'float:right;';
                             break;
                     }
-                    $object = '<div id="edusharing_'.$eduid.'" class="edusharingObject edusharingObjectRaw" style="'.$style.'">edusharing</div>';
+
+                    $content = '<span>'.$attributes['data-title'].'</span>';
+                    if($type === 'image')
+                        $content = '<img style="'.$attributes['width'].'px" src="'.get_config('wwwroot').'/artefact/edusharing/lib/previewHelper.php?sesskey='.$USER->get('sesskey').'&id='.$eduid.'" alt="'.$attributes['data-title'].'" title="'.$attributes['data-title'].'">';
+
+                    $object = '<div id="edusharing_'.$eduid.'" class="edusharingObject edusharingObjectRaw" style="'.$style.'">'.$content.'</div>';
+
                     $text = str_replace($match, $object, $text);
                 }
             }
@@ -321,7 +342,7 @@ EOF;
                         'title' => 'apppublic',
                         'defaultvalue' => $defaultPublic
                     ),
-                  /*  'apphost' => array(
+                    'apphost' => array(
                         'type'         => 'text',
                         'size'         => 255,
                         'title'        => 'apphost',
@@ -334,7 +355,8 @@ EOF;
                         'title'        => 'appdomain',
                         'description'  => 'appdomain',
                         'defaultvalue' => get_config_plugin('artefact', 'edusharing', 'appdomain')
-            ),*/)
+                    )
+                )
             )
         );
 

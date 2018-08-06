@@ -34,7 +34,7 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
         $return = '';
         $configdata = $instance->get('configdata');
         if(isset($configdata['eduid'])) {
-            $return = '<div class="edusharingObject edusharingObjectRaw" id="edusharing_'.$configdata['eduid'].'">edusharing</div>';
+            $return = '<div class="edusharingObject edusharingObjectRaw" id="edusharing_'.$configdata['eduid'].'"></div>';
         }
         return $return;
     }
@@ -55,9 +55,9 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
         //handle get condition
         $form['eduversionshow'] = array(
             'type'    => 'radio',
-            'title'   => 'eduversionshow',
+            'title'   => get_string('eduversionshow', 'blocktype.edusharing/edusharing'),
             'class' =>  (isset($configdata['eduobjectUrl']))?'hidden':'',
-            'options' => array(0=>'immer aktuelle', 1=>'genau diese'),
+            'options' => array(0=>get_string('eduversionshow_last', 'blocktype.edusharing/edusharing'), 1=>get_string('eduversionshow_current', 'blocktype.edusharing/edusharing')),
             'defaultvalue' => 0,
         );
         $form['eduobjectUrl'] = array(
