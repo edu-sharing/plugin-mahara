@@ -1,0 +1,39 @@
+body {
+    color: #333;
+}
+
+input[type=text], input[type=number] {
+    height: 30px;
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    margin-bottom: 30px;
+    padding: 10px;
+    margin-right: 5px;
+}
+
+label {
+    min-width: 0 !important;
+    display: inline-block;
+    margin-right: 30px;
+}
+
+.eduLabel {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 10px;
+}
+
+fieldset {
+    border: 0;
+    margin-bottom: 30px;
+    padding: 0;
+}
+
+
+#eduFormTitle {
+    width: 400px;
+}
+
+#eduFormWidth, #eduFormHeight {
+    width: 65px;
+}

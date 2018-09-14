@@ -6,5 +6,4 @@ TinyMCE plugin
     - add ",img[*],div[*]" to "extended_valid_elements" //prüfen
 
 edu-sharing filter
-- add edu.js to js/
 - in lib/web.php add "$javascript_array[] = $jsroot . 'edu.js';" just before "// TinyMCE must be included first for some reason we're not sure about"
