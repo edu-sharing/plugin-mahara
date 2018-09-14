@@ -8,3 +8,5 @@
 !/js/tinymce
 /js/tinymce/plugins
 !/js/tinymce/plugins/edusharing
+
+!readme.md
