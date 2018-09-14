@@ -1,0 +1,10 @@
+*
+!/artefacts
+/artefacts/*
+!/artefacts/edusharing
+
+!/js
+/js/*
+!/js/tinymce
+/js/tinymce/plugins
+!/js/tinymce/plugins/edusharing
