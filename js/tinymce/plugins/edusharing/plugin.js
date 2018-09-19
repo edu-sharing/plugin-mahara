@@ -61,8 +61,8 @@ tinymce.PluginManager.add('edusharing', function(editor, url) {
                                     break;
                                 }
                             }
-
-                            if(node.mediatype.indexOf('image') !== -1 || node.mediatype.indexOf('video') !== -1 || node.mediatype.indexOf('h5p') !== -1) {
+console.log(node.mediatype);
+                            if(node.mediatype.indexOf('image') !== -1 || node.mediatype.indexOf('video') !== -1 || node.mediatype.indexOf('h5p') !== -1 || node.mediatype.indexOf('folder') !== -1) {
                                 editor.insertContent ('<img '+style+' src="'+node.preview.url+'" ' +
                                     'data-objectId="'+node.ref.id+'"' +
                                     'data-objectUrl="'+node.objectUrl+'" ' +

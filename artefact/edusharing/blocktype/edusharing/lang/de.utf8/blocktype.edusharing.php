@@ -25,4 +25,5 @@ $string['eduversionshow_alignment_inline'] = 'Im Text';
 $string['eduversionshow_alignment_left'] = 'Links';
 $string['eduversionshow_alignment_right'] = 'Rechts';
 $string['eduversionshow_alignment_block'] = 'Blockelement';
-
+$string['edudirectory1'] = 'Es werden nur Materialien aus diesem Ordner eingefügt und veröffentlicht.';
+$string['edudirectory2'] = 'Die Unterordner werden nicht übernommen.';

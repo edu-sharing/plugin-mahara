@@ -26,24 +26,32 @@ $edusharing = new Edusharing();
         <input type="hidden" id="eduFormRatio">
         <div style="clear: both"></div>
     </div>
-    <span class="eduLabel"><?php echo get_string('eduversionshow', 'blocktype.edusharing/edusharing')?></span>
-    <fieldset>
-        <input type="radio" id="eduFormVersionLatest" name="eduFormVersion" value="-1" checked>
-        <label for="eduFormVersionLatest"> <?php echo get_string('eduversionshow_last', 'blocktype.edusharing/edusharing')?></label>
-        <input type="radio" id="eduFormVersionCurrent" name="eduFormVersion" value="">
-        <label for="eduFormVersionCurrent"> <?php echo get_string('eduversionshow_current', 'blocktype.edusharing/edusharing')?> (<span id="eduFormVersionCurrentShow"></span>)</label>
-    </fieldset>
-    <span class="eduLabel"><?php echo get_string('eduversionshow_alignment', 'blocktype.edusharing/edusharing')?></span>
-    <fieldset>
-        <input type="radio" id="eduFormAlignmentInline" name="eduFormAlignment" value="inline" checked>
-        <label for="eduFormAlignmentInline"> <?php echo get_string('eduversionshow_alignment_inline', 'blocktype.edusharing/edusharing')?></label>
-        <input type="radio" id="eduFormAlignmentLeft" name="eduFormAlignment" value="left">
-        <label for="eduFormAlignmentLeft"> <?php echo get_string('eduversionshow_alignment_left', 'blocktype.edusharing/edusharing')?></label>
-        <input type="radio" id="eduFormAlignmentRight" name="eduFormAlignment" value="right">
-        <label for="eduFormAlignmentRight"> <?php echo get_string('eduversionshow_alignment_right', 'blocktype.edusharing/edusharing')?></label>
-        <input type="radio" id="eduFormAlignmentBlock" name="eduFormAlignment" value="block">
-        <label for="eduFormAlignmentBlock"> <?php echo get_string('eduversionshow_alignment_block', 'blocktype.edusharing/edusharing')?></label>
-    </fieldset>
+    <div id="eduFormVersion">
+        <span class="eduLabel"><?php echo get_string('eduversionshow', 'blocktype.edusharing/edusharing')?></span>
+        <fieldset>
+            <input type="radio" id="eduFormVersionLatest" name="eduFormVersion" value="-1" checked>
+            <label for="eduFormVersionLatest"> <?php echo get_string('eduversionshow_last', 'blocktype.edusharing/edusharing')?></label>
+            <input type="radio" id="eduFormVersionCurrent" name="eduFormVersion" value="">
+            <label for="eduFormVersionCurrent"> <?php echo get_string('eduversionshow_current', 'blocktype.edusharing/edusharing')?> (<span id="eduFormVersionCurrentShow"></span>)</label>
+        </fieldset>
+    </div>
+    <div id="eduFormAlignment">
+        <span class="eduLabel"><?php echo get_string('eduversionshow_alignment', 'blocktype.edusharing/edusharing')?></span>
+        <fieldset>
+            <input type="radio" id="eduFormAlignmentInline" name="eduFormAlignment" value="inline" checked>
+            <label for="eduFormAlignmentInline"> <?php echo get_string('eduversionshow_alignment_inline', 'blocktype.edusharing/edusharing')?></label>
+            <input type="radio" id="eduFormAlignmentLeft" name="eduFormAlignment" value="left">
+            <label for="eduFormAlignmentLeft"> <?php echo get_string('eduversionshow_alignment_left', 'blocktype.edusharing/edusharing')?></label>
+            <input type="radio" id="eduFormAlignmentRight" name="eduFormAlignment" value="right">
+            <label for="eduFormAlignmentRight"> <?php echo get_string('eduversionshow_alignment_right', 'blocktype.edusharing/edusharing')?></label>
+            <input type="radio" id="eduFormAlignmentBlock" name="eduFormAlignment" value="block">
+            <label for="eduFormAlignmentBlock"> <?php echo get_string('eduversionshow_alignment_block', 'blocktype.edusharing/edusharing')?></label>
+        </fieldset>
+    </div>
+    <div id="eduFormDirectoryHint" style="display:none">
+        <p><?php echo get_string('edudirectory1', 'blocktype.edusharing/edusharing')?></p>
+        <p><?php echo get_string('edudirectory2', 'blocktype.edusharing/edusharing')?></p>
+    </div>
     <input type="hidden" id="eduFormMediatype">
     <input type="hidden" id="eduFormObjectUrl">
     <input type="hidden" id="eduFormObjectId">

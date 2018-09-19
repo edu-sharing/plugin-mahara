@@ -83,6 +83,7 @@ class PluginArtefactEdusharing extends PluginArtefact {
     }
 
     public static function edusharing_deleteartefacts($event, $artefacts) {
+        error_log('edusharing_deleteartefacts');
         try {
             foreach($artefacts as $id) {
                 EdusharingObject::deleteByInstanceId($id);
@@ -93,6 +94,7 @@ class PluginArtefactEdusharing extends PluginArtefact {
     }
 
     public static function edusharing_deleteblockinstance($event, BlockInstance $data) {
+        error_log('edusharing_deleteblockinstance');
             try {
                 if($data->get('blocktype') === 'edusharing') {
                     $configdata = $data->get('configdata');
@@ -100,7 +102,8 @@ class PluginArtefactEdusharing extends PluginArtefact {
                     $edusharingObject = EdusharingObject::load($eduid);
                     $edusharingObject->delete();
                 } else {
-                    EdusharingObject::deleteByInstanceId($data->get('id'));
+                    $instanceId = $data->get('id');
+                    EdusharingObject::deleteByInstanceId($instanceId);
                 }
             } catch(Exception $e) {
                 error_log(print_r($e, true));
@@ -145,6 +148,25 @@ class PluginArtefactEdusharing extends PluginArtefact {
         }
         $_SESSION[$lock] = false;
     }
+
+    private static function getEduObjects($content) {
+        $return = array();
+        if(strpos($content, 'edusharingObject') === false)
+            return $return;
+        preg_match_all('#<div(.*)edusharingObject(.*)>(.*)</div>#Umsi', $content, $matches,PREG_PATTERN_ORDER);
+        $matches = implode('',$matches[0]);
+        if(empty($matches))
+            return $return;
+        preg_match_all('#id="(.*)"#Umsi', $matches, $matches2,PREG_PATTERN_ORDER);
+        foreach($matches2[1] as $k => $v) {
+            $id = str_replace('edusharing_', '', $v);
+            $id = str_replace('user_', '', $id);
+            $matches2[1][$k] = $id;
+        }
+        return $matches2[1];
+    }
+
+
 
     private static function addObjects($text, $instanceId) {
 

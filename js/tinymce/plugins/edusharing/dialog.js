@@ -23,6 +23,11 @@ $(document).ready(function() {
                 $('#eduFormObjectId').val(node.properties['ccm:width'] / node.properties['ccm:height']);
             $('#eduFormDimensions').show();
         }
+        if(node.mediatype.indexOf('folder') !== -1) {
+            $('#eduFormVersion').hide();
+            $('#eduFormAlignment').hide();
+            $('#eduFormDirectoryHint').show();
+        }
     }
 
     window.addEventListener("message", function(event) {
