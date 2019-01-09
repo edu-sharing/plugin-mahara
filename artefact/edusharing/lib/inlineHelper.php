@@ -13,7 +13,8 @@ if(empty($_GET['id'])) {
     exit();
 }
 
-$edusharingObject = EdusharingObject::load($_GET['id']);
+$edusharingObject = EdusharingObject::load((int)$_GET['id']);
+$edusharingObject -> id = $edusharingObject -> instanceId;
 $edusharing = new Edusharing();
 $redirecturl = $edusharing->getRedirectUrl($edusharingObject);
 $ts = $timestamp = round(microtime(true) * 1000);
@@ -24,6 +25,7 @@ $redirecturl .= '&sig=' . urlencode($edusharing->getSignature($data));
 $redirecturl .= '&signed=' . urlencode($data);
 $redirecturl .= '&closeOnBack=true';
 $redirecturl .= '&ticket=' . urlencode(base64_encode($edusharing->encryptWithRepoPublic($edusharing->getTicket())));
-$redirecturl .= '&childobject_id=' . $_GET['childobject_id'];
+if($_GET['childobject_id'])
+    $redirecturl .= '&childobject_id=' . $_GET['childobject_id'];
 
 redirect($redirecturl);
