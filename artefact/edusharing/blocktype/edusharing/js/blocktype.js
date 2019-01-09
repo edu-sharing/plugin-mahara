@@ -9,7 +9,7 @@ if(jQuery('input[name="previewurl"]').val())
 
 window.addEventListener("message", function(event) {
     if(event.data.event=="APPLY_NODE"){
-        node = event.data.data;
+        var node = event.data.data;
         console.log(node);
         console.log('message apply node');
         jQuery('input[name="eduobjectUrl"]').attr('value', node.objectUrl).trigger("change") ; //to submit hidden field value

@@ -77,7 +77,7 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
         );
         $form['edusearchurl'] = array(
             'type' => 'hidden',
-            'value' => get_config_plugin('artefact', 'edusharing', 'repourl').'/components/search?reurl=IFRAME&ticket='.$ticket,
+            'value' => get_config_plugin('artefact', 'edusharing', 'repourl').'/components/search?applyDirectories=true&reurl=IFRAME&ticket='.$ticket,
         );
         $form['edumimetype'] = array(
             'type' => 'text',
@@ -130,26 +130,6 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
             )
         );
     }
-
-
-
-
-/*
-     *
-     * hierein könnte man das filter js rein machen wenn es so funktionieren soll
- *
- * inline javascript kann man aber auch reinhauen in der render methode
-     *
-     **/
-   /* public static function get_instance_javascript(BlockInstance $instance) {
-        return array(
-            array(
-   //use global edu.js!!!!!!!!!!!
-                //'file'   => 'js/render.js',//evtl nicht nötig wegen masterfilter
-               // 'initjs' => "addNewPostShortcut($blockid);",
-            )
-        );
-    }*/
 
     public static function allowed_in_view(View $view) {
         return true;// $view->get('owner') != null;

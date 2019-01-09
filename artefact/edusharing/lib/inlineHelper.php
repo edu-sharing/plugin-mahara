@@ -13,11 +13,6 @@ if(empty($_GET['id'])) {
     exit();
 }
 
-if(isset($_GET['childobject_order']))
-    $childobject_order = $_GET['childobject_order'];
-else
-    $childobject_order = -1;
-
 $edusharingObject = EdusharingObject::load($_GET['id']);
 $edusharing = new Edusharing();
 $redirecturl = $edusharing->getRedirectUrl($edusharingObject);
@@ -29,5 +24,6 @@ $redirecturl .= '&sig=' . urlencode($edusharing->getSignature($data));
 $redirecturl .= '&signed=' . urlencode($data);
 $redirecturl .= '&closeOnBack=true';
 $redirecturl .= '&ticket=' . urlencode(base64_encode($edusharing->encryptWithRepoPublic($edusharing->getTicket())));
-$redirecturl .= '&childobject_order=' . $childobject_order;
+$redirecturl .= '&childobject_id=' . $_GET['childobject_id'];
+
 redirect($redirecturl);
