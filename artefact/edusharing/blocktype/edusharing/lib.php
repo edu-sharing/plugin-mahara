@@ -44,6 +44,9 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
     }
 
     public static function instance_config_form(BlockInstance $instance) {
+
+        global $USER;
+
         $configdata = $instance->get('configdata');
         $instance->set('artefactplugin', 'edusharing');
 
@@ -73,7 +76,7 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
         $form['previewurl'] = array(
             'type' => 'text',
             'class' => 'hidden',
-            'defaultvalue' => (isset($configdata['previewurl']))?$configdata['previewurl']:'',
+            'defaultvalue' => (isset($configdata['previewurl']))?$configdata['previewurl'] . '&sesskey=' . $USER->get('sesskey'):'',
         );
         $form['edusearchurl'] = array(
             'type' => 'hidden',
@@ -112,6 +115,7 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
             if($values['eduid'] === false)
                 throw new Exception('EduSharingObject::add() failed');
 
+            $values['previewurl'] = get_config('wwwroot').'/artefact/edusharing/lib/previewHelper.php?id=' . $values['eduid'];
             //repo deos not support preview versions, set it anyway
             if($values['eduversionshow'] > 0) {
                 $values['previewurl'] .= '&version=' . $values['eduversion'];
