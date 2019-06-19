@@ -30,7 +30,7 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
 
     }
 
-    public static function render_instance(BlockInstance $instance, $editing=false) {
+    public static function render_instance(BlockInstance $instance, $editing=false, $versioning = false) {
         $return = '';
         $configdata = $instance->get('configdata');
         if(isset($configdata['eduid'])) {
