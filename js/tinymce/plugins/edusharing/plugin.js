@@ -62,36 +62,27 @@ tinymce.PluginManager.add('edusharing', function(editor, url) {
                                 }
                             }
 
+                            var srcUrl = node.preview.url;
+                            srcUrl += '&objectId=' + node.ref.id;
+                            srcUrl += '&objectUrl=' + node.objectUrl;
+                            srcUrl += '&title=' + title;
+                            srcUrl += '&mediatype=' + node.mediatype;
+                            srcUrl += '&mimetype=' + node.mimetype;
+                            srcUrl += '&contentVersion=' + node.contentVersion;
+                            srcUrl += '&version=' + version;
+                            srcUrl += '&alignment=' + alignment;
+                            srcUrl += '&alt=' + title;
+
                             if(node.mediatype.indexOf('image') !== -1 || node.mediatype.indexOf('video') !== -1 || node.mediatype.indexOf('h5p') !== -1 || node.mediatype.indexOf('folder') !== -1) {
-                                editor.insertContent ('<img '+style+' src="'+node.preview.url+'" ' +
-                                    'data-objectId="'+node.ref.id+'"' +
-                                    'data-objectUrl="'+node.objectUrl+'" ' +
-                                    'data-title="'+title+'" ' +
-                                    'data-preview="'+ node.preview.url+'" ' +
-                                    'width="'+win.getContentWindow().document.getElementById('eduFormWidth').value+'" ' +
-                                    'height="'+win.getContentWindow().document.getElementById('eduFormHeight').value+'" ' +
-                                    'data-mediatype="'+node.mediatype+'" ' +
-                                    'data-mimetype="'+node.mimetype+'" ' +
-                                    'data-contentVersion="'+node.contentVersion+'" ' +
-                                    'data-version="'+version+'" ' +
-                                    'data-alignment="'+alignment+'" ' +
-                                    'alt="'+title+'" ' +
+                                srcUrl += '&width=' + win.getContentWindow().document.getElementById('eduFormWidth').value;
+                                srcUrl += '&height=' + win.getContentWindow().document.getElementById('eduFormHeight').value;
+                                editor.insertContent ('<img '+style+' src="'+srcUrl+'" ' +
                                     'class="edusharingObject" ' +
                                     '/>');
                             } else {
-                                editor.insertContent ('<span '+ style +
-                                    'data-objectId="'+node.ref.id+'"' +
-                                    'data-objectUrl="'+node.objectUrl+'" ' +
-                                    'data-title="'+title+'" ' +
-                                    'data-preview="'+ node.preview.url+'" ' +
-                                    'data-mediatype="'+node.mediatype+'" ' +
-                                    'data-mimetype="'+node.mimetype+'" ' +
-                                    'data-contentVersion="'+node.contentVersion+'" ' +
-                                    'data-version="'+version+'" ' +
-                                    'data-alignment="'+alignment+'" ' +
-                                    'alt="'+title+'" ' +
-                                    'class="edusharingObject" >' +
-                                    title + '</span>');
+                                editor.insertContent ('<a '+ style +
+                                    'class="edusharingObject" href="'+srcUrl+'">' +
+                                    title + '</a>');
                             }
 
                             // Close the window

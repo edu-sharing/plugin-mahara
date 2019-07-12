@@ -96,9 +96,11 @@ class EdusharingObject
 
     public static function deleteByInstanceId($instanceId) {
         $records = get_records_array('artefact_edusharing', 'instanceid', $instanceId);
-        foreach($records as $record) {
-            $eduSharingObject = new EdusharingObject($record->instanceid,$record->objecturl,$record->title,$record->mimetype,$record->version, $record->width, $record->height);
-            $eduSharingObject -> delete();
+        if(is_array($records)) {
+            foreach($records as $record) {
+                $eduSharingObject = new EdusharingObject($record->instanceid,$record->objecturl,$record->title,$record->mimetype,$record->version, $record->width, $record->height);
+                $eduSharingObject -> delete();
+            }
         }
     }
 }

@@ -112,6 +112,7 @@ class PluginArtefactEdusharing extends PluginArtefact {
 
     public static function edusharing_saveartefact($event, ArtefactType $data) {
         global $USER;
+        error_log('edusharing_saveartefact');
         $lock = $USER->get('username').$data->get('id');
         try {
             $description = $data->get('description');
@@ -176,10 +177,9 @@ class PluginArtefactEdusharing extends PluginArtefact {
             return $text;
 
         preg_match_all('#<img(.*)edusharingObject(.*)>#Umsi', $text, $matchesImg,PREG_PATTERN_ORDER);
-        preg_match_all('#<span(.*)edusharingObject(.*)>(.*)</span>#Umsi', $text, $matchesSpan,PREG_PATTERN_ORDER);
+        preg_match_all('#<a(.*)edusharingObject(.*)>(.*)</a>#Umsi', $text, $matchesSpan,PREG_PATTERN_ORDER);
 
         $matches = array_merge($matchesImg[0], $matchesSpan[0]);
-
         if (!empty($matches)) {
             foreach ($matches as $match) {
                 $doc = new DOMDocument();
@@ -187,30 +187,27 @@ class PluginArtefactEdusharing extends PluginArtefact {
                 $node = $doc->getElementsByTagName('img')->item(0);
                 $type = 'image';
                 if (empty($node)) {
-                    $node = $doc->getElementsByTagName('span')->item(0);
+                    $node = $doc->getElementsByTagName('a')->item(0);
+                    $qs = $node->getAttribute('href');
                     $type = 'text';
                     if (empty($node)) {
                         error_log('error loading node');
                         return false;
                     }
+                } else {
+                    $qs = $node->getAttribute('src');
                 }
-
-                $attributes = array();
-                foreach ($doc->getElementsByTagName('*') as $tag) {
-                    foreach ($tag->attributes as $attributeName => $attributeNodeVal) {
-                        $attributes[$attributeName] = $tag -> getAttribute($attributeName);
-                    }
-                }
+                $params = array();
+                parse_str(parse_url($qs, PHP_URL_QUERY), $params);
 
                 //newly added object
-                if(!in_array('id', $attributes)) {
-                    $edusharingObject = new EdusharingObject($instanceId, $attributes['data-objecturl'],  $attributes['data-title'],  $attributes['data-mimetype'],  $attributes['data-version'],  (isset($attributes['width']))?$attributes['width']:'',  (isset($attributes['height']))?$attributes['height']:'');
+                if(!in_array('id', $params)) {
+                    $edusharingObject = new EdusharingObject($instanceId, $params['objectUrl'],  $params['title'],  $params['mimetype'],  $params['version'],  (isset($params['width']))?$params['width']:'',  (isset($params['height']))?$params['height']:'');
                     $eduid = $edusharingObject -> add();
                     $style = '';
                     if($type === 'image')
-                        $style .= 'width='.$attributes['width'].';height:'.$attributes['height'].';maxWidth=100%;';
-
-                    switch($attributes['data-alignment']) {
+                        $style .= 'width='.$params['width'].';height:'.$params['height'].';maxWidth=100%;';
+                    switch($params['alignment']) {
                         case 'inline':
                             $style .= 'display:inline-block;';
                             break;
@@ -225,9 +222,9 @@ class PluginArtefactEdusharing extends PluginArtefact {
                             break;
                     }
 
-                    $content = '<span>'.$attributes['data-title'].'</span>';
+                    $content = '<a>'.$params['title'].'</a>';
                     if($type === 'image')
-                        $content = '<img style="'.$attributes['width'].'px" src="'.get_config('wwwroot').'/artefact/edusharing/lib/previewHelper.php?sesskey='.$USER->get('sesskey').'&id='.$eduid.'" alt="'.$attributes['data-title'].'" title="'.$attributes['data-title'].'">';
+                        $content = '<img style="'.$params['width'].'px" src="'.get_config('wwwroot').'/artefact/edusharing/lib/previewHelper.php?sesskey='.$USER->get('sesskey').'&id='.$eduid.'" alt="'.$params['title'].'" title="'.$params['title'].'">';
 
                     $object = '<div id="edusharing_'.$eduid.'" class="edusharingObject edusharingObjectRaw" style="'.$style.'">'.$content.'</div>';
 
