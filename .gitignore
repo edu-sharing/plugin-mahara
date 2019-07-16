@@ -1,12 +1,14 @@
 *
-!/artefacts
-/artefacts/*
-!/artefacts/edusharing
+!/artefact
+/artefact/*
+!/artefact/edusharing
+!/artefact/edusharing/**
 
 !/js
 /js/*
 !/js/tinymce
 /js/tinymce/plugins
 !/js/tinymce/plugins/edusharing
+!/js/tinymce/plugins/edusharing/**
 
 !readme.md
