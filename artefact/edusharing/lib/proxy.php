@@ -47,7 +47,7 @@ class filter_edusharing_edurender {
      *
      * @param string $html
      */
-    public function filter_edusharing_display($html, $id) {
+    public function filter_edusharing_display($html, $id, $title) {
         global $USER;
         error_reporting(0);
         $html = str_replace(array("\n", "\r", "\n"), '', $html);
@@ -55,12 +55,11 @@ class filter_edusharing_edurender {
          * replaces {{{LMS_INLINE_HELPER_SCRIPT}}}
          */
         $html = str_replace("{{{LMS_INLINE_HELPER_SCRIPT}}}", get_config('wwwroot') . "/artefact/edusharing/lib/inlineHelper.php?sesskey=".$USER->get('sesskey')."&id=" . $id, $html);
-        //$html = preg_replace("/<es:title[^>]*>.*<\/es:title>/Uims", utf8_decode(optional_param('title', '', PARAM_TEXT)), $html);
+        $html = preg_replace("/<es:title[^>]*>.*<\/es:title>/Uims", utf8_decode($title), $html);
         echo $html;
         exit();
     }
 }
-
 
 
 global $USER;
@@ -78,6 +77,7 @@ $id = str_replace(array('edusharing_', 'user_'), '', $_GET['id']);
 $username = $USER->get('username');
 $edusharing = new Edusharing();
 $edusharingObject = EdusharingObject::load($id);
+
 $objId = str_replace('ccrep://'.get_config_plugin('artefact', 'edusharing', 'repoid').'/', '', $edusharingObject->objecturl);
 $ts = $timestamp = round(microtime(true) * 1000);
 $url = get_config_plugin('artefact', 'edusharing', 'repourl') . '/renderingproxy';
@@ -90,7 +90,7 @@ $url .= '&rep_id=' . get_config_plugin('artefact', 'edusharing', 'repoid');
 $url .= '&app_id=' . get_config_plugin('artefact', 'edusharing', 'appid');
 $url .= '&u='. rawurlencode(base64_encode($edusharing->encryptWithRepoPublic($username)));
 $url .= '&obj_id=' . $objId;
-$url .= '&resource_id='.urlencode($edusharingObject->instanceId);
+$url .= '&resource_id='.urlencode($edusharingObject->resourceId);
 $url .= '&course_id='.urlencode($edusharingObject->instanceId);
 $url .= '&version='.urlencode($edusharingObject->version); //prüfen
 $url .= '&display=inline';
@@ -98,4 +98,4 @@ $url .= '&width=' . urlencode($edusharingObject->width);
 $url .= '&height=' . urlencode($edusharingObject->height);
 $e = new filter_edusharing_edurender();
 $html = $e->filter_edusharing_get_render_html($url);
-$e->filter_edusharing_display($html, $id);
+$e->filter_edusharing_display($html, $id, $edusharingObject->title);

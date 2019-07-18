@@ -13,8 +13,9 @@ class EdusharingObject
     public $version;
     public $width;
     public $height;
+    public $resourceId;
 
-    public function __construct($instanceId = 0, $objecturl = '', $title = '', $mimetype = '', $version = '', $width = null, $height = null) {
+    public function __construct($instanceId = 0, $objecturl = '', $title = '', $mimetype = '', $version = '', $width = null, $height = null, $resourceId = '') {
         $this->instanceId = (int)$instanceId;
         $this->objecturl = $objecturl;
         $this->title = $title;
@@ -22,6 +23,7 @@ class EdusharingObject
         $this->version = $version;
         $this->width = $width;
         $this->height = $height;
+        $this->resourceId = $resourceId;
     }
 
     public function getPreviewUrl() {
@@ -35,7 +37,7 @@ class EdusharingObject
             "user" => null,
             "lmsId" => get_config_plugin('artefact', 'edusharing', 'appid'),
             "courseId" => $this->instanceId,
-            "resourceId" => $this->instanceId
+            "resourceId" => $this->resourceId
         );
         try {
             $eduSoapClient->deleteUsage($params);
@@ -58,7 +60,7 @@ class EdusharingObject
             "toUsed" => '2222-05-30T09:00:00',
             "distinctPersons" => '0',
             "version" => $this->version,
-            "resourceId" => $this->instanceId,
+            "resourceId" => $this->resourceId,
             "xmlParams" => ''
         );
         try {
@@ -82,7 +84,7 @@ class EdusharingObject
 
     public static function load($eduid) {
         $record = get_record('artefact_edusharing', 'id', $eduid);
-        return new EdusharingObject($record->instanceid,$record->objecturl,$record->title,$record->mimetype,$record->version, $record->width, $record->height);
+        return new EdusharingObject($record->instanceid,$record->objecturl,$record->title,$record->mimetype,$record->version, $record->width, $record->height, $record->resourceid);
     }
 
     private function dbDelete() {
@@ -91,14 +93,15 @@ class EdusharingObject
 
 
     private function dbInsert() {
-        return insert_record('artefact_edusharing', (object)array('instanceid' => $this->instanceId,'objecturl' => $this->objecturl,'title' => $this->title,'mimetype' => $this->mimetype,'version' => $this->version, 'width'=>$this->width, 'height'=>$this->height), 'id', true);
+        error_log('########################DB-INSERT: '.$this->title);
+        return insert_record('artefact_edusharing', (object)array('instanceid' => $this->instanceId,'objecturl' => $this->objecturl,'title' => $this->title,'mimetype' => $this->mimetype,'version' => $this->version, 'width'=>$this->width, 'height'=>$this->height, 'resourceid'=>$this->resourceId), 'id', true);
     }
 
     public static function deleteByInstanceId($instanceId) {
         $records = get_records_array('artefact_edusharing', 'instanceid', $instanceId);
         if(is_array($records)) {
             foreach($records as $record) {
-                $eduSharingObject = new EdusharingObject($record->instanceid,$record->objecturl,$record->title,$record->mimetype,$record->version, $record->width, $record->height);
+                $eduSharingObject = new EdusharingObject($record->instanceid,$record->objecturl,$record->title,$record->mimetype,$record->version, $record->width, $record->height, $record->resourceId);
                 $eduSharingObject -> delete();
             }
         }

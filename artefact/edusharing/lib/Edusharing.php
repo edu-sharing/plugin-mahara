@@ -73,7 +73,7 @@ class Edusharing {
         $url .= '&session='.urlencode(session_id());
         $objId = str_replace('ccrep://'.get_config_plugin('artefact', 'edusharing', 'repoid').'/', '', $edusharingObject->objecturl);
         $url .= '&obj_id='.urlencode($objId);
-        $url .= '&resource_id='.urlencode($edusharingObject->id);
+        $url .= '&resource_id='.urlencode($edusharingObject->resourceId);
         $url .= '&course_id='.urlencode($edusharingObject->instanceId);
         $url .= '&display='.urlencode($displaymode);
         $url .= '&width=' . urlencode($edusharingObject->width);

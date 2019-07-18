@@ -15,6 +15,7 @@ if(empty($_GET['id'])) {
 
 $edusharingObject = EdusharingObject::load((int)$_GET['id']);
 $edusharingObject -> id = $edusharingObject -> instanceId;
+//echo "<script>console.log( 'inlineHelper: " . $edusharingObject -> resourceId . "' );</script>";
 $edusharing = new Edusharing();
 $redirecturl = $edusharing->getRedirectUrl($edusharingObject);
 $ts = $timestamp = round(microtime(true) * 1000);

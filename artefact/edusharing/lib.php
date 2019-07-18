@@ -138,6 +138,8 @@ class PluginArtefactEdusharing extends PluginArtefact {
         try {
             $configdata = $data->get('configdata');
             $configdata['text'] = self::addObjects(@$configdata['text'], $data->get('id'));
+            error_log('##################### CONFIGDATA TEXT ##############################');
+            error_log($configdata['text']);
             $data->set('configdata', $configdata);
             //avoid recursion
             if(@!$_SESSION[$lock]) {
@@ -199,10 +201,10 @@ class PluginArtefactEdusharing extends PluginArtefact {
                 }
                 $params = array();
                 parse_str(parse_url($qs, PHP_URL_QUERY), $params);
-
                 //newly added object
-                if(!in_array('id', $params)) {
-                    $edusharingObject = new EdusharingObject($instanceId, $params['objectUrl'],  $params['title'],  $params['mimetype'],  $params['version'],  (isset($params['width']))?$params['width']:'',  (isset($params['height']))?$params['height']:'');
+                if((!in_array('id', $params)) && $params['objectUrl']) {
+                    $edusharingObject = new EdusharingObject($instanceId, $params['objectUrl'],  $params['title'],  $params['mimetype'],  $params['version'],  (isset($params['width']))?$params['width']:'',  (isset($params['height']))?$params['height']:'', $params['resourceId']);
+
                     $eduid = $edusharingObject -> add();
                     $style = '';
                     if($type === 'image')

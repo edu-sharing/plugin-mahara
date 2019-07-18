@@ -15,7 +15,6 @@ tinymce.PluginManager.add('edusharing', function(editor, url) {
         editor.addButton('edusharing', {
             image: config.wwwroot+'/artefact/edusharing/img/edusharing.png',
             onclick: function() {
-
                 if(editor.selection.getNode().classList.contains('edusharingObject') || editor.selection.getNode().parentNode.classList.contains('edusharingObject'))
                     console.log('edit mode not implemented');
                 else
@@ -63,16 +62,19 @@ tinymce.PluginManager.add('edusharing', function(editor, url) {
                                         }
                                     }
 
-                                    var srcUrl = node.preview.url;
+                                    let srcUrl = node.preview.url;
+                                    const resourceId = Math.floor(Math.random() * 10000) + 1000;
                                     srcUrl += '&objectId=' + node.ref.id;
                                     srcUrl += '&objectUrl=' + node.objectUrl;
-                                    srcUrl += '&title=' + title;
+                                    //srcUrl += '&title=' + title;
+                                    srcUrl += '&title=' + win.getContentWindow().document.getElementById('eduFormTitle').value;
                                     srcUrl += '&mediatype=' + node.mediatype;
                                     srcUrl += '&mimetype=' + node.mimetype;
                                     srcUrl += '&contentVersion=' + node.contentVersion;
                                     srcUrl += '&version=' + version;
+                                    srcUrl += '&resourceId=' + parseInt(resourceId, 10),
                                     srcUrl += '&alignment=' + alignment;
-                                    srcUrl += '&alt=' + title;
+                                    srcUrl += '&alt=' + win.getContentWindow().document.getElementById('eduFormTitle').value;;
 
                                     if(node.mediatype.indexOf('image') !== -1 || node.mediatype.indexOf('video') !== -1 || node.mediatype.indexOf('h5p') !== -1 || node.mediatype.indexOf('folder') !== -1) {
                                         srcUrl += '&width=' + win.getContentWindow().document.getElementById('eduFormWidth').value;
@@ -85,7 +87,6 @@ tinymce.PluginManager.add('edusharing', function(editor, url) {
                                             'class="edusharingObject" href="'+srcUrl+'">' +
                                             title + '</a>');
                                     }
-
                                     // Close the window
                                     win.close();
                                 }

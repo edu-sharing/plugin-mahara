@@ -25,7 +25,7 @@ $url .= '&sig=' . urlencode($edusharing->getSignature($data));
 $url .= '&signed=' . urlencode($data);
 $url .= '&closeOnBack=true';
 $url .= '&appId=' . get_config_plugin('artefact', 'edusharing', 'appid');
-$url .= '&resourceId='.urlencode($edusharingObject->instanceId);
+$url .= '&resourceId='.urlencode($edusharingObject->resourceId);
 $url .= '&courseId='.urlencode($edusharingObject->instanceId);
 $url .= '&nodeId=' . $objId;
 $url .= '&repoId=' . get_config_plugin('artefact', 'edusharing', 'repoid');
