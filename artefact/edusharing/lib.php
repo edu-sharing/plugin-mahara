@@ -138,8 +138,6 @@ class PluginArtefactEdusharing extends PluginArtefact {
         try {
             $configdata = $data->get('configdata');
             $configdata['text'] = self::addObjects(@$configdata['text'], $data->get('id'));
-            error_log('##################### CONFIGDATA TEXT ##############################');
-            error_log($configdata['text']);
             $data->set('configdata', $configdata);
             //avoid recursion
             if(@!$_SESSION[$lock]) {

@@ -49,7 +49,7 @@ class EdusharingObject
 
     public function setUsage() {
         global $USER;
-        $eduSoapClient = new EduSoapClient(get_config_plugin('artefact', 'edusharing', 'repourl') . '/services/usage2?wsdl');
+        $eduSoapClient = new EduSoapClient(get_config_plugin('artefact', 'edusharing', 'repourl') . 'services/usage2?wsdl');
         $params = array(
             "eduRef" => $this->objecturl,
             "user" => $USER->get('username'),
@@ -93,7 +93,6 @@ class EdusharingObject
 
 
     private function dbInsert() {
-        error_log('########################DB-INSERT: '.$this->title);
         return insert_record('artefact_edusharing', (object)array('instanceid' => $this->instanceId,'objecturl' => $this->objecturl,'title' => $this->title,'mimetype' => $this->mimetype,'version' => $this->version, 'width'=>$this->width, 'height'=>$this->height, 'resourceid'=>$this->resourceId), 'id', true);
     }
 
