@@ -12,6 +12,7 @@ window.addEventListener("message", function(event) {
         var node = event.data.data;
         console.log(node);
         console.log('message apply node');
+        const resourceId = Math.floor(Math.random() * 10000) + 1000;
         jQuery('input[name="eduobjectUrl"]').attr('value', node.objectUrl).trigger("change") ; //to submit hidden field value
         jQuery('input[name="eduversion"]').attr('value', node.contentVersion).trigger("change"); //to submit hidden field value
         jQuery('input[name="edumimetype"]').attr('value', node.mimetype).trigger("change"); //to submit hidden field value
@@ -20,6 +21,7 @@ window.addEventListener("message", function(event) {
         jQuery('input[name="eduheight"]').attr('value', node.properties['ccm:height']).trigger("change");
         jQuery('input[name="previewurl"]').attr('value', node.preview.url+ '&crop=true&width=444&maxHeight=500').trigger("change");
         jQuery('.eduPreview').attr('src', node.preview.url+ '&crop=true&width=444&maxHeight=500');
+        jQuery('input[name="eduresourceid"]').attr('value', resourceId).trigger("change");
 
         //from mahara
         jQuery('#instconf_title_expand').addClass('hidden');

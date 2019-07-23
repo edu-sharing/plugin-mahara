@@ -102,12 +102,17 @@ class PluginBlocktypeEdusharing extends MaharaCoreBlocktype {
             'class' => 'hidden',
             'defaultvalue' => (isset($configdata['eduheight']))?$configdata['eduheight']:'',
         );
+        $form['eduresourceid'] = array(
+            'type' => 'text',
+            'class' => 'hidden',
+            'defaultvalue' => (isset($configdata['eduresourceid']))?$configdata['eduresourceid']:'',
+        );
         return $form;
     }
 
     public static function instance_config_save($values, $instance) {
         try {
-            $edusharingObject = new EdusharingObject($instance->get('id'), $values['eduobjectUrl'], $values['title'], $values['edumimetype'], ($values['eduversionshow'] == 0) ? -1 : $values['eduversion'], $values['eduwidth'], $values['eduheight']);
+            $edusharingObject = new EdusharingObject($instance->get('id'), $values['eduobjectUrl'], $values['title'], $values['edumimetype'], ($values['eduversionshow'] == 0) ? -1 : $values['eduversion'], $values['eduwidth'], $values['eduheight'], $values['eduresourceid']);
             if (!empty($values['eduid'])) {
                 $edusharingObject->delete();
             }
