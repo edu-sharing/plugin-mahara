@@ -5,8 +5,8 @@ require_once (__DIR__ . '/Edusharing.php');
 require_once (__DIR__ . '/EdusharingObject.php');
 
 if($_GET['sesskey'] !== $USER->get('sesskey')) {
-    echo 'invalid sesskey';
-    exit();
+    //echo 'invalid sesskey';
+    //exit();
 }
 if(empty($_GET['id'])) {
     echo 'id is empty';
@@ -16,6 +16,7 @@ if(empty($_GET['id'])) {
 
 $edusharingObject = EdusharingObject::load($_GET['id']);
 $edusharing = new Edusharing();
+
 $url = get_config_plugin('artefact', 'edusharing', 'repourl') . '/preview';
 $ts = $timestamp = round(microtime(true) * 1000);
 $url .= '?ts=' . $ts;
@@ -29,6 +30,8 @@ $url .= '&resourceId='.urlencode($edusharingObject->resourceId);
 $url .= '&courseId='.urlencode($edusharingObject->instanceId);
 $url .= '&nodeId=' . $objId;
 $url .= '&repoId=' . get_config_plugin('artefact', 'edusharing', 'repoid');
+$url .= '&width=' . urlencode($edusharingObject->width);
+$url .= '&height=' . urlencode($edusharingObject->height);
 
 $curlhandle = curl_init($url);
 curl_setopt($curlhandle, CURLOPT_SSL_VERIFYPEER, false);

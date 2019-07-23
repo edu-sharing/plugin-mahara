@@ -4,8 +4,10 @@ tinymce.PluginManager.add('edusharing', function(editor, url) {
     editor.on('keyup',function(e) {
         if (13 === e.keyCode) {
             var node = editor.selection.getNode().parentElement;
-            if(node.classList.contains('edusharingObject') && node.id == false)
+            if(node.classList.contains('edusharingObject') && node.id == false){
+                editor.insertContent ('</div>');
                 node.remove();
+            }
             editor.insertContent ('<p></p>');
         }
     })
