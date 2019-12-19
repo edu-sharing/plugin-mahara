@@ -31,12 +31,30 @@ $(document).ready(function() {
     }
 
     window.addEventListener("message", function(event) {
-        if(event.data.event=="APPLY_NODE"){
+        if (event.data.event=="APPLY_NODE") {
             node = event.data.data;
             setDialogValues(node);
+        } else if (event.data.action == "insert") {
+            let data, error;
+            try {
+                data = {
+                    node: JSON.parse(document.getElementById('eduNode').value),
+                    version: Array.from(document.getElementsByName('eduFormVersion')).find((v) => v.checked).value,
+                    alignment: Array.from(document.getElementsByName('eduFormAlignment')).find((v) => v.checked).value,
+                    title: document.getElementById('eduFormTitle').value,
+                    width: document.getElementById('eduFormWidth').value,
+                    height: document.getElementById('eduFormHeight').value,
+                }
+            } catch (e) {
+                error = 'Couln\'t get required data'
+            }
+            window.parent.postMessage({
+                mceAction: 'customAction',
+                content: { id: event.data.id, data, error }
+            }, '*');
+
         }
     }, false);
-
 
     $('#eduFormWidth').bind('keyup', function() {
         $('#eduFormHeight').val(Math.ceil($('#eduFormWidth').val() / $('#eduFormRatio').val()));

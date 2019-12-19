@@ -14,7 +14,7 @@ $edusharing = new Edusharing();
     <link rel="stylesheet" href="<?php echo get_config('wwwroot').'/theme/modern/style/style.css'?>">
     <link rel="stylesheet" href="<?php echo get_config('wwwroot').'/js/tinymce/plugins/edusharing/style.css'?>">
 </head>
-<body>
+<body style="height: 100%;">
 <iframe id="eduFrame" src="<?php echo get_config_plugin('artefact', 'edusharing', 'repourl')?>/components/search?reurl=IFRAME&applyDirectories=true&ticket=<?php echo $edusharing->getTicket()?>" style="border: none;" height="100%" width="100%">edu</iframe>
 <img id="eduPreview" src="" style="float:right; width: 200px;display:none;">
 <form id="eduForm" style="display:none">
@@ -60,5 +60,3 @@ $edusharing = new Edusharing();
 </form>
 </body>
 </html>
-
-<!-- <button onclick="top.tinymce.activeEditor.windowManager.getWindows()[0].close();">Close window</button> -->
