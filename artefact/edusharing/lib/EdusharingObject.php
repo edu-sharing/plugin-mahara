@@ -100,7 +100,7 @@ class EdusharingObject
         $records = get_records_array('artefact_edusharing', 'instanceid', $instanceId);
         if(is_array($records)) {
             foreach($records as $record) {
-                $eduSharingObject = new EdusharingObject($record->instanceid,$record->objecturl,$record->title,$record->mimetype,$record->version, $record->width, $record->height, $record->resourceId);
+                $eduSharingObject = new EdusharingObject($record->instanceid,$record->objecturl,$record->title,$record->mimetype,$record->version, $record->width, $record->height, $record->resourceid);
                 $eduSharingObject -> delete();
             }
         }
