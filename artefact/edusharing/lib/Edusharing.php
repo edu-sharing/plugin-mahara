@@ -59,9 +59,13 @@ class Edusharing {
 
     public function getSSlKeys() {
         $res = openssl_pkey_new();
-        openssl_pkey_export($res, $privatekey);
-        $publickey = openssl_pkey_get_details($res);
-        return (object)array('appprivate'=>$privatekey, 'apppublic'=>$publickey["key"]);
+        if (!empty($res)){
+            openssl_pkey_export($res, $privatekey);
+            $publickey = openssl_pkey_get_details($res);
+            return (object)array('appprivate'=>$privatekey, 'apppublic'=>$publickey["key"]);
+        }else{
+            return (object)array('appprivate'=>'Could not create private key!', 'apppublic'=>'Could not create public key!');
+        }
     }
 
     function getRedirectUrl(EdusharingObject $edusharingObject, $displaymode = EDUSHARING_DISPLAY_MODE_DISPLAY) {
